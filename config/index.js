@@ -10,16 +10,16 @@ var config = {
       name: 'daotao-api'
     },
     port: port,
-    db: 'mysql://hoangnm:root@128.199.91.28:3306/test',
+    db: 'mysql://hoangnm_daotao:daotao1234@115.84.179.142:3306/hoangnm_daotao',
   },
-
+  
   production: {
     root: rootPath,
     app: {
       name: 'daotao-api'
     },
     port: port,
-    db: 'mysql://hoangnm:root@128.199.91.28:3306/test',
+    db: 'mysql://hoangnm_daotao:daotao1234@115.84.179.142:3306/hoangnm_daotao',
   }
 };
 
