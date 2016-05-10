@@ -1,8 +1,21 @@
 module.exports = function(config) {
 
 	var fs = require('fs');
+	var bcrypt = require('bcrypt');
 	var obj = {};
     
+	obj.encrypt = function(plainText, done) {
+		bcrypt.hash(plainText, 10, function(error, encrypted) {
+			done(encrypted);
+		});	
+	}
+	
+	obj.compare = function(pass, hash, done) {
+		bcrypt.compare(pass, hash, function(err, res) {
+			return done(err, res);
+		});
+	}
+	
     obj.queryToJson = function(str) {
         if (typeof str !== 'string') {
             return {};
@@ -62,7 +75,7 @@ module.exports = function(config) {
 		var ctrlsPath = config.root + '/app/controllers';
 		fs.readdirSync(ctrlsPath).forEach(function (file) {
 		    if (file.indexOf('.js') >= 0) {
-		    	ctrls[file.replace('.js', '')] = require(ctrlsPath + '/' + file)(models[file.replace('.js', '')]);
+		    	ctrls[file.replace('.js', '')] = require(ctrlsPath + '/' + file)(models[file.replace('.js', '')], obj);
 		    	console.log('Loaded: ' + file.replace('.js', '') + ' controllers.');
 		    }
 	  	})

@@ -18,6 +18,8 @@ module.exports = function (app, utils, models) {
       app.put('/api/'+name+'/:id([0-9a-f]+)', ctrls[name].put); // update
       app.delete('/api/'+name+'/:id([0-9a-f]+)', ctrls[name].remove); // delete
   });
+  
+  app.post('/api/users/login', ctrls['users'].login); // login
 
   // catch-all
   app.get('*', function (req, res) { res.status(404).json({ error:'Invalid GET request' }) })

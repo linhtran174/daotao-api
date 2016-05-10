@@ -1,8 +1,23 @@
 'use strict';
 
-module.exports = function(model) {
+module.exports = function(model, utils) {
 
     var usersCtrl = {};
+    
+    usersCtrl.login = function (req, res, next) {
+        model.findOne({ where: {name: req.body.name} })
+            .then(function (user) {
+                utils.compare(req.body.pass, user.get().pass, function(err, resq) {
+                    console.log('DEBUG', err, resq);
+                    if (resq)
+                        res.json({"status" : "login success"});
+                    else 
+                        res.json({"status": "login fail"});
+                })
+            }, function(err) {
+                return next(err);
+            });
+    }
 
     usersCtrl.list = function (req, res, next) {
         model.findAll()
@@ -21,10 +36,6 @@ module.exports = function(model) {
             }, function(err) {
                 return next(err);
             });
-        // model.find(req.query, function (err, users) {
-        //     if (err) { return next(err); }
-        //     res.json(users);  
-        // });
     }
 
     usersCtrl.get = function (req, res, next) {
@@ -37,12 +48,15 @@ module.exports = function(model) {
     };
 
     usersCtrl.post = function (req, res, next) {
-        model.create(req.body)
-            .then(function (user) {
-                res.json(user);
-            }, function(err) {
-                return next(err); 
-            });
+        utils.encrypt(req.body.pass, function(encrypt) {
+            req.body.pass = encrypt;
+            model.create(req.body)
+                .then(function (user) {
+                    res.json(user);
+                }, function(err) {
+                    return next(err); 
+                });
+        })
     };
 
     usersCtrl.put = function(req, res, next) {
