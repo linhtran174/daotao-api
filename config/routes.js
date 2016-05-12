@@ -20,7 +20,8 @@ module.exports = function (app, utils, models) {
   });
   
   app.post('/api/users/login', ctrls['users'].login); // login
-
+  app.post('/api/teachers/login', ctrls['teachers'].login);
+  
   // catch-all
   app.get('*', function (req, res) { res.status(404).json({ error:'Invalid GET request' }) })
   app.post('*', function (req, res) { res.status(404).json({ error:'Invalid POST request' }) })

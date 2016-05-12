@@ -5,9 +5,9 @@ module.exports = function(model, utils) {
     var teachersCtrl = {};
     
     teachersCtrl.login = function (req, res, next) {
-        model.findOne({ where: {name: req.body.name} })
+        model.findOne({ where: {teacher_email: req.body.email} })
             .then(function (user) {
-                utils.compare(req.body.pass, user.get().pass, function(err, resq) {
+                utils.compare(req.body.password, user.get().teacher_pass, function(err, resq) {
                     console.log('DEBUG', err, resq);
                     if (resq)
                         res.json({"status" : "login success"});
