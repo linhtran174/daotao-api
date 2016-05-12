@@ -1,7 +1,7 @@
 var Sequelize = require('sequelize');
 
 module.exports = function(sequelize){
-	var Course = sequelize.define('courses',{
+	var Courses = sequelize.define('courses',{
 		course_id: {
 			type: Sequelize.BIGINT.UNSIGNED,
 			primaryKey: true,
@@ -68,5 +68,5 @@ module.exports = function(sequelize){
 		tableName: 'tblCourse'
 	});
 
-	return Course;
+	return Courses;
 }
