@@ -66,6 +66,13 @@ module.exports = function(sequelize){
 		timestamps: false,
 		freezeTableName: true,
 		tableName: 'tblCourse'
+	},
+	{
+		classMethods: {
+			associate: function(models){
+				Courses.belongsTo(models.Teacher, {foreignKey: 'course_teacher', targetKey: 'teacher_id'});
+			}
+		}
 	});
 
 	return Courses;
