@@ -32,8 +32,8 @@ module.exports = function(sequelize) {
 			tableName: 'tblSchedule'
 		});
 	
-	Schedule.belongsTo(Student, {foreignKey: 'schedule_student', targetKey: 'stud_id'});
-	Schedule.belongsTo(Teacher, {foreignKey: 'schedule_teacher', targetKey: 'teacher_id'});
+	// Schedule.belongsTo(Student, {foreignKey: 'schedule_student', targetKey: 'stud_id'});
+	// Schedule.belongsTo(Teacher, {foreignKey: 'schedule_teacher', targetKey: 'teacher_id'});
 
 	return Schedule;
 }
