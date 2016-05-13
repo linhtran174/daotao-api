@@ -6,8 +6,8 @@ module.exports = function(model, utils) {
 
     coursesCtrl.list = function(req, res, next) {
         model.findAll()
-            .then(function(users) {
-                res.json(users);
+            .then(function(courses) {
+                res.json(courses);
             }, function(err) {
                 return next(err);
             });
@@ -16,8 +16,8 @@ module.exports = function(model, utils) {
     coursesCtrl.search = function(req, res, next) {
         console.log('DEBUG search query ', req.query);
         model.findAll({ where: req.query })
-            .then(function(users) {
-                res.json(users);
+            .then(function(courses) {
+                res.json(courses);
             }, function(err) {
                 return next(err);
             });
@@ -26,8 +26,8 @@ module.exports = function(model, utils) {
     coursesCtrl.get = function(req, res, next) {
         console.log(req.params.id);
         model.findById(req.params.id)
-            .then(function(user) {
-                res.json(user);
+            .then(function(courses) {
+                res.json(courses);
             }, function(err) {
                 return next(err);
             });
@@ -36,8 +36,8 @@ module.exports = function(model, utils) {
     coursesCtrl.post = function(req, res, next) {
         console.log(req.body);
         model.create(req.body)
-            .then(function(user) {
-                res.json(user);
+            .then(function(courses) {
+                res.json(courses);
             }, function(err) {
                 return next(err);
             });
@@ -45,9 +45,13 @@ module.exports = function(model, utils) {
 
     coursesCtrl.put = function(req, res, next) {
         model.findById(req.params.id)
-            .then(function(user) {
-                user.update(req.body).then(function(newUser) {
-                    res.json(newUser);
+            .then(function(courses) {
+                if(courses == null){
+                    res.json("404 not found that course ID");
+                    return next();
+                }
+                courses.update(req.body).then(function(newcourses) {
+                    res.json(newcourses);
                 }, function(updateErr) {
                     return next(updateErr);
                 })
