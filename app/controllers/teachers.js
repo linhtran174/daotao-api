@@ -8,7 +8,7 @@ module.exports = function(model, utils) {
         model.findOne({ where: {teacher_email: req.body.email} })
             .then(function (user) {
                 if (user == null) {
-                    res.json("There is no user with this email!!!!");
+                    res.json("There is no teacher with this email!!!!");
                     return next();
                 }
                 utils.compare(req.body.password, user.get().teacher_pass, function(err, resq) {
@@ -69,7 +69,7 @@ module.exports = function(model, utils) {
             .then(function (user) {
                 if (user == null) 
                 {
-                    res.json("There is no user with this id!!");
+                    res.json("There is no teacher with this id!!");
                     return next();
                 }
                 user.update(req.body).then(function(newUser){
@@ -89,6 +89,7 @@ module.exports = function(model, utils) {
             .then(function(){
                 res.json({id: req.params.id, message: 'delete completed'});
             }, function(err) {
+                res.json({status: "some error happened, please check your data again"});
                 return next(err);
             })
     }
