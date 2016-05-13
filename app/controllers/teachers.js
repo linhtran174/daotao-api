@@ -7,6 +7,10 @@ module.exports = function(model, utils) {
     teachersCtrl.login = function (req, res, next) {
         model.findOne({ where: {teacher_email: req.body.email} })
             .then(function (user) {
+                if (user == null) {
+                    res.json("There is no user with this email!!!!");
+                    return next();
+                }
                 utils.compare(req.body.password, user.get().teacher_pass, function(err, resq) {
                     console.log('DEBUG', err, resq);
                     if (resq)
@@ -54,7 +58,8 @@ module.exports = function(model, utils) {
                 .then(function (user) {
                     res.json(user);
                 }, function(err) {
-                    return next(err); 
+                    res.send('Some error happenned');
+                    //return next(err); 
                 });
         })
     };
@@ -62,6 +67,11 @@ module.exports = function(model, utils) {
     teachersCtrl.put = function(req, res, next) {
         model.findById(req.params.id)
             .then(function (user) {
+                if (user == null) 
+                {
+                    res.json("There is no user with this id!!");
+                    return next();
+                }
                 user.update(req.body).then(function(newUser){
                     res.json(newUser);
                 }, function(updateErr) {
@@ -73,11 +83,13 @@ module.exports = function(model, utils) {
     }
 
     teachersCtrl.remove = function(req, res, next) {
-        model.destroy({ where: { id: req.params.id } })
+
+        teacher
+        model.destroy({ where: { teacher_id: req.params.id } })
             .then(function(){
                 res.json({id: req.params.id, message: 'delete completed'});
             }, function(err) {
-                return handleError(err);
+                return next(err);
             })
     }
     
