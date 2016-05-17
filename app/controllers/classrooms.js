@@ -8,7 +8,7 @@ module.exports = function(model, utils) {
     classroomsCtrl.list = function (req, res, next) {
         model.findAll()
             .then(function (users) {
-                res.json(users);  
+                res.status(200).json({count: users.length,list:users});  
             }, function(err) {
                 return next(err);
             });
