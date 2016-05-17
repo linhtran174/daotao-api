@@ -5,6 +5,7 @@ module.exports = function(config) {
 	var obj = {};
     
 	obj.encrypt = function(plainText, done) {
+		console.log('hash ', plainText);
 		bcrypt.hash(plainText, 10, function(error, encrypted) {
 			done(encrypted);
 		});	
