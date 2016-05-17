@@ -17,11 +17,11 @@ module.exports = function(sequelize) {
 			allowNull: false
 		},
 		teacher_email: {
-			type: Sequelize.STRING(50),
+			type: Sequelize.STRING(100),
 			allowNull: false
 		},
 		teacher_pass: {
-			type: Sequelize.STRING(50),
+			type: Sequelize.STRING(100),
 			allowNull: false
 		},
 		teacher_phone: {

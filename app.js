@@ -5,14 +5,15 @@ var utils = require('./app/lib/utils')(config);
 
 var app = express();
 
-// var hash = '$2a$10$/iZvKzhwPOdE5/ojgh3WvOUpAFDTRx7pS64g2G5.yiID6G0.76wGC';
-// var pass = 'test';
-// utils.compare(pass, hash, function(err, res) {
-// 	console.log('DEBUG ', err, res);
-// })
-// utils.encrypt('test', function(pass) {
-// 	console.log(pass);
-// })
+var hash = '$2a$10$J1P1KG2.LhSU.kEsZOuXUOQvJRjBQW1V8R25sf/tmQzMbbIGe/nmm';
+var pass = '1';
+utils.compare(pass, hash, function(err, res) {
+	console.log('DEBUG ', err, res);
+
+})
+utils.encrypt('1', function(pass) {
+	console.log(pass);
+})
 
 var models = {};
 

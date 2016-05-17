@@ -8,24 +8,29 @@ module.exports = function(model, utils) {
 
 
     teachersCtrl.login = function(req, res, next) {
-        
-        model.findOne({ where: { teacher_email: req.body.email } })
+        console.log(req.body);
+        model.findOne({ where: { teacher_email: req.body.teacher_email } })
             .then(function(user) {
-                if (!user) {
+                console.log(user, user==null, user==undefined);
+                if (user) {
 
-                    res.status(404).json("There is no user with this email!!!!");
-                } else {
-                    console.log(user.get().teacher_pass, req.body.password);
-                    utils.compare(req.body.password, user.get().teacher_pass, function(err, resq) {
+                    console.log(user.get());
+                    console.log(req.body.teacher_pass, user.get().teacher_pass);
+                    utils.compare(req.body.teacher_pass, user.get().teacher_pass, function(err, resq) {
                         console.log('DEBUG', err, resq);
                         if (resq)
                             res.status(200).json({
                                 "status": "login success",
-                                "token": tokenGen.sign({ email: req.body.email }, "EdoSuperSecretKey")
+                                "token": tokenGen.sign({ email: req.body.teacher_email }, "EdoSuperSecretKey")
                             });
                         else
                             res.json({ "status": "login fail" });
                     })
+                } else {
+
+                    res.status(404).json("There is no user with this email!!!!");
+
+
                 }
 
             }, function(err) {
@@ -68,20 +73,21 @@ module.exports = function(model, utils) {
                     res.send("user already exists");
                     return next();
                 }
+                utils.encrypt(req.body.teacher_pass, function(encrypt) {
+                    req.body.teacher_pass = encrypt;
+                    console.log("encrypted password: " + encrypt);
+                    model.create(req.body)
+                        .then(function(user) {
+                            res.json(user);
+                        }, function(err) {
+                            throw err;
+                            res.send('Some error happenned');
+
+                        });
+                })
             });
+        ///////////////////////////////
 
-        utils.encrypt(req.body.pass, function(encrypt) {
-            req.body.pass = encrypt;
-            console.log("encrypted password: " + encrypt);
-            model.create(req.body)
-                .then(function(user) {
-                    res.json(user);
-                }, function(err) {
-                    throw err;
-                    res.send('Some error happenned');
-
-                });
-        })
     };
 
     teachersCtrl.put = function(req, res, next) {
@@ -106,7 +112,7 @@ module.exports = function(model, utils) {
             .then(function() {
                 res.json({ id: req.params.id, message: 'delete completed' });
             }, function(err) {
-                res.json({status: "some error happened, please check your data again"});
+                res.json({ status: "some error happened, please check your data again" });
                 return next(err);
             })
     }

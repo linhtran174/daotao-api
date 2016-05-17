@@ -5,7 +5,6 @@ module.exports = function(app, utils, models) {
 
     var jwtCheck = JwtCheck({
         secret: 'EdoSuperSecretKey',
-        issuer: 'http://ows.vn'
     });
 
     var ctrls = utils.loadControllers(models);
@@ -16,7 +15,7 @@ module.exports = function(app, utils, models) {
         res.render('index');
     })
 
-    //internal API protected by JSON Web Token
+    // internal API protected by JSON Web Token
     console.log(jwtCheck);
     app.use('/api/teachers/',
         jwtCheck.unless({ path: ['/api/teachers/login', { url: '/api/teachers', methods: ['POST'] }] })
