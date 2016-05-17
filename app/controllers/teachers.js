@@ -6,6 +6,7 @@ module.exports = function(model, utils) {
 
     var teachersCtrl = {};
 
+
     teachersCtrl.login = function(req, res, next) {
         
         model.findOne({ where: { teacher_email: req.body.email } })
@@ -105,6 +106,7 @@ module.exports = function(model, utils) {
             .then(function() {
                 res.json({ id: req.params.id, message: 'delete completed' });
             }, function(err) {
+                res.json({status: "some error happened, please check your data again"});
                 return next(err);
             })
     }
