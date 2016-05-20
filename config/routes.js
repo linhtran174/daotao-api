@@ -13,7 +13,7 @@ module.exports = function(app, utils, models) {
     app.use('/api/teachers',utils.checkToken);
     app.use('/api/classroom',utils.checkToken);
     app.use('/api/schedules',utils.checkToken);
-
+    app.use('/api/students',utils.checkToken);
 
 
     //set get default api

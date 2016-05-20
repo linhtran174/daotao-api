@@ -26,7 +26,7 @@ module.exports = function(sequelize) {
 		},
 		stud_phone: {
 			type: Sequelize.STRING(50),
-		}
+		},
 		stud_bod:{
 			type: Sequelize.DATE
 		}
