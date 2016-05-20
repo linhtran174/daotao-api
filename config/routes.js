@@ -3,9 +3,7 @@ module.exports = function(app, utils, models) {
     var JwtCheck = require('express-jwt');
     var jwt = require('jsonwebtoken');
 
-    var jwtCheck = JwtCheck({
-        secret: 'EdoSuperSecretKey',
-    });
+
 
     var ctrls = utils.loadControllers(models);
 
@@ -15,11 +13,10 @@ module.exports = function(app, utils, models) {
         res.render('index');
     })
 
-    // internal API protected by JSON Web Token
-    console.log(jwtCheck);
-    app.use('/api/teachers/',
-        jwtCheck.unless({ path: ['/api/teachers/login', { url: '/api/teachers', methods: ['POST'] }] })
-    ); //accessing all teachers resources will require token 
+    
+    app.use('/api/teachers',utils.checkToken);
+    app.use('/api/classroom',utils.checkToken);
+    app.use('/api/schedules',utils.checkToken);
 
 
 
