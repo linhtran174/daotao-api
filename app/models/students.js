@@ -2,30 +2,33 @@ var Sequelize = require('sequelize');
 
 module.exports = function(sequelize) {
 
-	var Teacher = sequelize.define('teachers', {
-		teacher_id: {
+	var Teacher = sequelize.define('students', {
+		stud_id: {
 			type: Sequelize.BIGINT.UNSIGNED,
 			primaryKey: true,
 			autoIncrement: true
 		},
-		teacher_fname: {
+		stud_fname: {
 			type: Sequelize.STRING(100),
 			allowNull: false
 		},
-		teacher_lname: {
+		stud_lname: {
 			type: Sequelize.STRING(50),
 			allowNull: false
 		},
-		teacher_email: {
+		stud_email: {
 			type: Sequelize.STRING(100),
 			allowNull: false
 		},
-		teacher_pass: {
+		stud_pass: {
 			type: Sequelize.STRING(100),
 			allowNull: false
 		},
-		teacher_phone: {
+		stud_phone: {
 			type: Sequelize.STRING(50),
+		},
+		stud_bod:{
+			type: Sequelize.DATE
 		}
 	}, {
 		timestamps: false,

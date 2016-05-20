@@ -4,19 +4,19 @@ var tokenGen = require('jsonwebtoken');
 
 module.exports = function(model, utils) {
 
-    var teachersCtrl = {};
+    var studentsCtrl = {};
 
-    teachersCtrl.login = function(req, res, next) {
+    studentsCtrl.login = function(req, res, next) {
         console.log(req.body);
-        model.findOne({ where: { teacher_email: req.body.teacher_email } })
+        model.findOne({ where: { stud_email: req.body.stud_email } })
             .then(function(user) {
                 if (user) {
-                    utils.compare(req.body.teacher_pass, user.get().teacher_pass, function(err, resq) {
+                    utils.compare(req.body.stud_pass, user.get().stud_pass, function(err, resq) {
                         console.log('DEBUG', err, resq);
                         if (resq)
                             res.status(200).json({
                                 "status": "login successful",
-                                "token": tokenGen.sign({ email: req.body.teacher_email, role: "teacher" },
+                                "token": tokenGen.sign({ email: req.body.stud_email, role: "student"},
                                     "EdoSuperSecretKey",
                                     {expiresIn: "12h"})
                             });
@@ -36,9 +36,9 @@ module.exports = function(model, utils) {
             });
     }
 
-    teachersCtrl.list = function(req, res, next) {
+    studentsCtrl.list = function(req, res, next) {
         console.log('user: ', req.user);
-        if (req.user.role == "teacher") {
+        if (req.user.role == "student") {
             model.findAll()
                 .then(function(users) {
                     res.status(200).json(users);
@@ -51,9 +51,9 @@ module.exports = function(model, utils) {
         }
     };
 
-    teachersCtrl.search = function(req, res, next) {
+    studentsCtrl.search = function(req, res, next) {
         console.log('DEBUG search query ', req.query);
-        if (req.user.role == "teacher") {
+        if (req.user.role == "student") {
             model.findAll({ where: req.query })
                 .then(function(users) {
                     if (users) res.json(users);
@@ -67,12 +67,12 @@ module.exports = function(model, utils) {
         }
     }
 
-    teachersCtrl.get = function(req, res, next) {
-        if (req.user.role == "teacher") {
+    studentsCtrl.get = function(req, res, next) {
+        if (req.user.role == "student") {
             model.findById(req.params.id)
                 .then(function(user) {
                     if (user) res.json(user);
-                    else res.status(404).json({ status: "404 teacher not found" });
+                    else res.status(404).json({ status: "404 stud not found" });
                 }, function(err) {
                     res.status(1000).json({ status: "1000 failed, unknown error", message: err.message });
                     next(err);
@@ -82,15 +82,15 @@ module.exports = function(model, utils) {
         }
     };
 
-    teachersCtrl.post = function(req, res, next) {
-        model.findOne({ where: { teacher_email: req.body.teacher_email } })
+    studentsCtrl.post = function(req, res, next) {
+        model.findOne({ where: { stud_email: req.body.stud_email } })
             .then(function(user) {
                 if (user) {
                     res.status(409).json({ status: "409 failed", message: "user already exists" });
                     next();
                 }
-                utils.encrypt(req.body.teacher_pass, function(encrypt) {
-                    req.body.teacher_pass = encrypt;
+                utils.encrypt(req.body.stud_pass, function(encrypt) {
+                    req.body.stud_pass = encrypt;
                     console.log("encrypted password: " + encrypt);
                     model.create(req.body)
                         .then(function(user) {
@@ -105,8 +105,8 @@ module.exports = function(model, utils) {
         ///////////////////////////////
     };
 
-    teachersCtrl.put = function(req, res, next) {
-        if (req.user.role == "teacher") {
+    studentsCtrl.put = function(req, res, next) {
+        if (req.user.role == "student") {
             model.findById(req.params.id)
                 .then(function(user) {
                     if (!user) {
@@ -128,9 +128,9 @@ module.exports = function(model, utils) {
         }
     }
 
-    teachersCtrl.remove = function(req, res, next) {
-        if (req.user.role == "teacher") {
-            model.destroy({ where: { teacher_id: req.params.id } })
+    studentsCtrl.remove = function(req, res, next) {
+        if (req.user.role == "student") {
+            model.destroy({ where: { stud_id: req.params.id } })
                 .then(function() {
                     res.status(200).json({ status: "success", id: req.params.id, message: 'delete completed' });
                 }, function(err) {
@@ -142,5 +142,5 @@ module.exports = function(model, utils) {
         }
     }
 
-    return teachersCtrl;
+    return studentsCtrl;
 }
