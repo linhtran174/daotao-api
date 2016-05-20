@@ -13,16 +13,21 @@ module.exports = function(config) {
                     req.user = user;
                     next();
                 } else {
-                    res.status(400).json({
-                        status: "400 bad request",
-                        message: "You have an invalid token, probably someone has tried to modify it"
-                    });
+                    if (err && err.name == 'TokenExpiredError')
+                        res.status(400).json({
+                            status: "400 bad request",
+                            message: "Your token has expired"
+                        })
+                    else
+                        res.status(400).json({
+                            status: "400 bad request",
+                            message: "You have an invalid token, probably someone has tried to modify it"
+                        });
                 }
             });
-        }
-        else{
-        	req.user = null;
-        	next();
+        } else {
+            req.user = null;
+            next();
         }
     }
 

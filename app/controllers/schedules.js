@@ -34,7 +34,7 @@ module.exports = function(model, utils) {
         });
     };
 
-    schedulesCtrl.scheduleValidate(teacher, student, time, callback) = function() {
+    schedulesCtrl.scheduleValidate = function(teacher, student, time, callback) {
         //if the same teacher, student and time already exist then this schedule cannot be created
         var isValid = 1;
         callback(isValid);

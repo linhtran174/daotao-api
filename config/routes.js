@@ -1,9 +1,5 @@
 module.exports = function(app, utils, models) {
 
-    var JwtCheck = require('express-jwt');
-    var jwt = require('jsonwebtoken');
-
-
 
     var ctrls = utils.loadControllers(models);
 
@@ -13,7 +9,7 @@ module.exports = function(app, utils, models) {
         res.render('index');
     })
 
-    
+    //check token with these routes
     app.use('/api/teachers',utils.checkToken);
     app.use('/api/classroom',utils.checkToken);
     app.use('/api/schedules',utils.checkToken);

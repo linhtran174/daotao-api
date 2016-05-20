@@ -6,7 +6,6 @@ module.exports = function(model, utils) {
 
     var teachersCtrl = {};
 
-
     teachersCtrl.login = function(req, res, next) {
         console.log(req.body);
         model.findOne({ where: { teacher_email: req.body.teacher_email } })
