@@ -4,75 +4,80 @@ module.exports = function(model, utils) {
 
     var schedulesCtrl = {};
 
-    schedulesCtrl.list = function (req, res, next) {
-        model.findAll()
-            .then(function (users) {
-                res.json(users);  
-            }, function(err) {
-                return next(err);
-            });
+    schedulesCtrl.list = function(req, res, next) {
+        model.findAll().then(function(schedules) {
+            res.status(200).json(schedules);
+        }, function(err) {
+            res.status(400).json({ status: "400 bad request", message: err.message })
+            return next(err);
+        });
     };
-    
+
     schedulesCtrl.search = function(req, res, next) {
         console.log('DEBUG search query ', req.query);
-        model.findAll({ where: req.query })
-            .then(function (users) {
-                res.json(users);  
-            }, function(err) {
-                return next(err);
-            });
+        model.findAll({ where: req.query }).then(function(schedules) {
+            if (schedules) res.json(schedules);
+            else res.status(404).json({ status: "success", message: "no schedule was found" })
+        }, function(err) {
+            res.status(1000).json({ status: "failed, unknown error", message: err.message });
+            return next(err);
+        });
     }
 
-    schedulesCtrl.get = function (req, res, next) {
-        model.findById(req.params.id)
-            .then(function (user) {
-                res.json(user);
-            }, function(err) {
-                return next(err);
-            });
+    schedulesCtrl.get = function(req, res, next) {
+        model.findById(req.params.id).then(function(schedule) {
+            if (schedule) res.json(schedule);
+            else res.status(404).json({ status: "404 schedule not found" });
+        }, function(err) {
+            res.status(1000).json({ status: "1000 failed, unknown error", message: err.message });
+            return next(err);
+        });
     };
 
-    schedulesCtrl.post = function (req, res, next) {
-        utils.encrypt(req.body.pass, function(encrypt) {
-            req.body.pass = encrypt;
-            model.create(req.body)
-                .then(function (user) {
-                    res.json(user);
-                }, function(err) {
-                    res.send('Some error happenned');
-                    //return next(err); 
-                });
+    schedulesCtrl.scheduleValidate = function(teacher, student, time, callback) {
+        //if the same teacher, student and time already exist then this schedule cannot be created
+        var isValid = 1;
+        callback(isValid);
+    }
+
+    schedulesCtrl.post = function(req, res, next) {
+        this.scheduleValidate(0, 0, 0, function() {
+            model.create(req.body).then(function(schedule) {
+                res.json(schedule);
+            }, function(err) {
+                console.log(JSON.stringify(err));
+                res.status(1000).json({ status: "failed", message: err.message });
+            });
         })
+        ///////////////////////////////
     };
 
     schedulesCtrl.put = function(req, res, next) {
-        model.findById(req.params.id)
-            .then(function (user) {
-                if (user == null) 
-                {
-                    res.json("There is no schedules with this id!!");
-                    return next();
-                }
-                user.update(req.body).then(function(newUser){
-                    res.json(newUser);
-                }, function(updateErr) {
-                    return next(updateErr);
-                })
-            }, function(err) {
-                return next(err);
-            });
+        model.findById(req.params.id).then(function(schedule) {
+            if (!schedule) {
+                res.status(404).json({ status: "failed", message: "There is no schedule with this id!!" });
+                return next();
+            }
+            schedule.update(req.body).then(function(schedule) {
+                res.status(200).json(schedule);
+            }, function(updateErr) {
+                res.status(1000).json({ status: "failed", message: updateErr.message });
+                return next(updateErr);
+            })
+        }, function(err) {
+            res.status(1000).json({ status: "failed", message: err.message })
+            return next(err);
+        });
     }
 
     schedulesCtrl.remove = function(req, res, next) {
-
-        teacher
-        model.destroy({ where: { schedules_id: req.params.id } })
-            .then(function(){
-                res.json({id: req.params.id, message: 'delete completed'});
-            }, function(err) {
-                return next(err);
-            })
+        model.destroy({ where: { schedule_id: req.params.id } }).then(function() {
+            res.status(200).json({ status: "success", id: req.params.id, message: 'delete completed' });
+        }, function(err) {
+            res.status(1000).json({ status: "1000 failed, unknown error", message: err.message });
+            return next(err);
+        })
     }
-    
+
     return schedulesCtrl;
 }
