@@ -38,7 +38,7 @@ module.exports = function(model, utils) {
 
     studentsCtrl.list = function(req, res, next) {
         console.log('user: ', req.user);
-        if (req.user.role == "student") {
+        if (req.user && req.user.role == "student") {
             model.findAll()
                 .then(function(users) {
                     res.status(200).json(users);
@@ -53,7 +53,7 @@ module.exports = function(model, utils) {
 
     studentsCtrl.search = function(req, res, next) {
         console.log('DEBUG search query ', req.query);
-        if (req.user.role == "student") {
+        if (req.user && req.user.role == "student") {
             model.findAll({ where: req.query })
                 .then(function(users) {
                     if (users) res.json(users);
@@ -68,7 +68,7 @@ module.exports = function(model, utils) {
     }
 
     studentsCtrl.get = function(req, res, next) {
-        if (req.user.role == "student") {
+        if (req.user && req.user.role == "student") {
             model.findById(req.params.id)
                 .then(function(user) {
                     if (user) res.json(user);
@@ -106,7 +106,7 @@ module.exports = function(model, utils) {
     };
 
     studentsCtrl.put = function(req, res, next) {
-        if (req.user.role == "student") {
+        if (req.user && req.user.role == "student") {
             model.findById(req.params.id)
                 .then(function(user) {
                     if (!user) {
@@ -129,7 +129,7 @@ module.exports = function(model, utils) {
     }
 
     studentsCtrl.remove = function(req, res, next) {
-        if (req.user.role == "student") {
+        if (req.user && req.user.role == "student") {
             model.destroy({ where: { stud_id: req.params.id } })
                 .then(function() {
                     res.status(200).json({ status: "success", id: req.params.id, message: 'delete completed' });

@@ -37,8 +37,8 @@ module.exports = function(model, utils) {
     }
 
     teachersCtrl.list = function(req, res, next) {
-        console.log('user: ', req.user);
-        if (req.user.role == "teacher") {
+        console.log('user: ', req.user && req.user);
+        if (req.user && req.user.role == "teacher") {
             model.findAll()
                 .then(function(users) {
                     res.status(200).json(users);
@@ -53,7 +53,7 @@ module.exports = function(model, utils) {
 
     teachersCtrl.search = function(req, res, next) {
         console.log('DEBUG search query ', req.query);
-        if (req.user.role == "teacher") {
+        if (req.user && req.user.role == "teacher") {
             model.findAll({ where: req.query })
                 .then(function(users) {
                     if (users) res.json(users);
@@ -68,7 +68,7 @@ module.exports = function(model, utils) {
     }
 
     teachersCtrl.get = function(req, res, next) {
-        if (req.user.role == "teacher") {
+        if (req.user && req.user.role == "teacher") {
             model.findById(req.params.id)
                 .then(function(user) {
                     if (user) res.json(user);
@@ -106,7 +106,7 @@ module.exports = function(model, utils) {
     };
 
     teachersCtrl.put = function(req, res, next) {
-        if (req.user.role == "teacher") {
+        if (req.user && req.user.role == "teacher") {
             model.findById(req.params.id)
                 .then(function(user) {
                     if (!user) {
@@ -129,7 +129,7 @@ module.exports = function(model, utils) {
     }
 
     teachersCtrl.remove = function(req, res, next) {
-        if (req.user.role == "teacher") {
+        if (req.user && req.user.role == "teacher") {
             model.destroy({ where: { teacher_id: req.params.id } })
                 .then(function() {
                     res.status(200).json({ status: "success", id: req.params.id, message: 'delete completed' });
@@ -144,3 +144,4 @@ module.exports = function(model, utils) {
 
     return teachersCtrl;
 }
+
