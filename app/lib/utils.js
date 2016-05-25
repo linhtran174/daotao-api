@@ -10,6 +10,7 @@ module.exports = function(config) {
         if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
             jwt.verify(req.headers.authorization.split(' ')[1], 'EdoSuperSecretKey', function(err, user) {
                 if (user) {
+                    console.log('There is an user');
                     req.user = user;
                     next();
                 } else {

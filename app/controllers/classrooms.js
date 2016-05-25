@@ -65,8 +65,6 @@ module.exports = function(model, utils) {
     }
 
     classroomsCtrl.remove = function(req, res, next) {
-
-        teacher
         model.destroy({ where: { class_id: req.params.id } })
             .then(function(){
                 res.json({id: req.params.id, message: 'delete completed'});
