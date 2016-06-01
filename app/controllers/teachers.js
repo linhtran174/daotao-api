@@ -16,6 +16,7 @@ module.exports = function(model, utils) {
                         if (resq)
                             res.status(200).json({
                                 "status": "login successful",
+                                "id": user.get().teacher_id,
                                 "token": tokenGen.sign({ email: req.body.teacher_email, role: "teacher" },
                                     "EdoSuperSecretKey",
                                     {expiresIn: "12h"})
