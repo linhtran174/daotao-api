@@ -6,6 +6,45 @@ module.exports = function(model, utils) {
 
     var teachersCtrl = {};
 
+    teachersCtrl.modifyMyInfo = function(req,res,next){
+        if (req.user && req.user.role == "teacher") {
+            model.findById(req.user.teacher_id)
+                .then(function(user) {
+                    if (!user) {
+                        res.status(404).json({ status: "failed", message: "There is no user with this id!!" });
+                        next();
+                    }
+                    user.update(req.body).then(function(newUser) {
+                        res.status(200).json(newUser);
+                    }, function(updateErr) {
+                        res.status(1000).json({ status: "failed", message: updateErr.message });
+                        next(updateErr);
+                    })
+                }, function(err) {
+                    res.status(1000).json({ status: "failed", message: err.message })
+                    next(err);
+                });
+        } else {
+            res.status(401).json({ status: "401 failed", message: "You do not have the right to access this resource" });
+        }
+    }
+
+    teachersCtrl.getMyInfo = function(req,res,next){
+        if(req.user && req.user.role =="teacher"){
+            model.findById(req.user.teacher_id)
+                .then(function(user){
+                    if (!user) {
+                        res.status(404).json({ status: "failed", message: "There is no user with this id!!" });
+                        next();
+                    }
+                    else{
+                        res.status(200).json(user);
+                        next();
+                    }
+                })
+        }
+    }
+
     teachersCtrl.login = function(req, res, next) {
         console.log(req.body);
         model.findOne({ where: { teacher_email: req.body.teacher_email } })
@@ -17,7 +56,7 @@ module.exports = function(model, utils) {
                             res.status(200).json({
                                 "status": "login successful",
                                 "id": user.get().teacher_id,
-                                "token": tokenGen.sign({ email: req.body.teacher_email, role: "teacher" },
+                                "token": tokenGen.sign({ email: req.body.teacher_email, teacher_id: user.get().teacher_id, role: "teacher" },
                                     "EdoSuperSecretKey",
                                     {expiresIn: "12h"})
                             });
@@ -107,7 +146,7 @@ module.exports = function(model, utils) {
     };
 
     teachersCtrl.put = function(req, res, next) {
-        if (req.user && req.user.role == "teacher") {
+        if (req.user && req.user.role == "admin") {
             model.findById(req.params.id)
                 .then(function(user) {
                     if (!user) {
@@ -130,7 +169,7 @@ module.exports = function(model, utils) {
     }
 
     teachersCtrl.remove = function(req, res, next) {
-        if (req.user && req.user.role == "teacher") {
+        if (req.user && req.user.role == "admin") {
             model.destroy({ where: { teacher_id: req.params.id } })
                 .then(function() {
                     res.status(200).json({ status: "success", id: req.params.id, message: 'delete completed' });
@@ -142,6 +181,8 @@ module.exports = function(model, utils) {
             res.status(401).json({ status: "401 failed", message: "You do not have the right to access this resource" });
         }
     }
+
+
 
     return teachersCtrl;
 }
