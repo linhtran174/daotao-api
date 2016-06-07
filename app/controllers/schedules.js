@@ -4,6 +4,20 @@ module.exports = function(model, utils) {
 
     var schedulesCtrl = {};
 
+    schedulesCtrl.teacherGetSchedule = function(req,res,next){
+        if(req.user && req.user.role=="teacher"){
+            model.findAll({
+                where:{schedule_teacher: req.user.id}
+            }).then(function(schedules){
+                res.status(200).send({status: "sucesss", schedules: schedules});
+            })
+        }
+        else{
+            res.status(401).json({status: "failed", message:"You do not have the right to access this resource"});
+        }
+    }
+
+
     schedulesCtrl.list = function(req, res, next) {
         model.findAll().then(function(schedules) {
             res.status(200).json(schedules);

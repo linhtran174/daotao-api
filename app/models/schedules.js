@@ -14,7 +14,11 @@ module.exports = function(sequelize) {
 			type: Sequelize.BIGINT.UNSIGNED,
 			allowNull: false
 		},
-		schedule_datetime: {
+		schedule_start: {
+			type: Sequelize.DATE,
+			allowNull: false
+		},
+		schedule_end: {
 			type: Sequelize.DATE,
 			allowNull: false
 		},

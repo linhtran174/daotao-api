@@ -35,11 +35,9 @@ module.exports = function(model, utils) {
                 .then(function(user){
                     if (!user) {
                         res.status(404).json({ status: "failed", message: "There is no user with this id!!" });
-                        next();
                     }
                     else{
                         res.status(200).json(user);
-                        next();
                     }
                 })
         }
