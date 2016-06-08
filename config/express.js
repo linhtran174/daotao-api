@@ -22,7 +22,7 @@ module.exports = function (app, config) {
     // use "*" here to accept any origin
     res.set('Access-Control-Allow-Origin', '*');
     res.set('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
-    res.set('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type');
+    res.set('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, token');
     res.set('Access-Control-Allow-Credentials', 'true');
     // res.set('Access-Control-Allow-Max-Age', 3600);
     if ('OPTIONS' == req.method) return res.send(200);
