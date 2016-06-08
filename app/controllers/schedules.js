@@ -8,9 +8,9 @@ module.exports = function(model, utils) {
         console.log(req.user);
         if(req.user && req.user.role=="teacher"){
             model.findAll({
-                where:{schedule_teacher: req.user.teacher_id}
+                where:{schedule_teacher: req.user.id}
             }).then(function(schedules){
-                res.status(200).send({status: "sucesss", schedules: schedules});
+                res.status(200).json({status: "sucesss", schedules: schedules});
             })
         }
         else{
@@ -18,9 +18,20 @@ module.exports = function(model, utils) {
         }
     }
 
-
-    
-
+    schedulesCtrl.teacherCreateSchedule = function(req,res,next){
+        req.body.schedule_teacher = req.user.id;
+        if(req.user && req.user.role=="teacher"){
+            model.create(req.body).then(function(schedule) {
+                res.json(schedule);
+            }, function(err) {
+                console.log(JSON.stringify(err));
+                res.status(1000).json({ status: "failed", message: err.message });
+            });
+        }
+        else{
+            res.status(401).json({status: "failed", message:"You do not have the right to access this resource"});
+        }
+    }
 
     schedulesCtrl.list = function(req, res, next) {
         model.findAll().then(function(schedules) {
