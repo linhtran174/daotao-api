@@ -35,7 +35,7 @@ module.exports = function(app, utils, models) {
     //teacherAPI
     app.put('/api/teachers/modifyMyInfo',ctrls['teachers'].modifyMyInfo);
     app.get('/api/teachers/getMyInfo',ctrls['teachers'].getMyInfo);
-
+    app.get('/api/teachers/teacherGetSchedule',ctrls['schedules'].teacherGetSchedule);
 
     // catch-all
     app.get('*', function(req, res) { res.status(404).json({ error: 'Invalid GET request' }) })
