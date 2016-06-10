@@ -23,7 +23,7 @@ module.exports = function(model, utils) {
         if (req.user && req.user.role == "teacher") {
             model.findAll({ where: {course_teacher: req.user.id} })
                 .then(function(courses) {
-                    if (courses) res.json(courses);
+                    if (courses) res.json({ status: "success", message: "no courses was found", course:courses });
                     else res.status(404).json({ status: "success", message: "no courses was found" })
                 }, function(err) {
                     res.status(1000).json({ status: "failed, unknown error", message: err.message });
