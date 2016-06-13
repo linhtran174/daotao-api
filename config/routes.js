@@ -37,12 +37,12 @@ module.exports = function(app, utils, models) {
 
     //teacherAPI
     app.put('/api/teachers/modifyMyInfo', ctrls['teachers'].modifyMyInfo);
+    app.put('/api/teachers/changePassword', ctrls['teachers'].changePassword);
     app.get('/api/teachers/getMyInfo', ctrls['teachers'].getMyInfo);
     app.get('/api/schedules/teacherGetSchedule', ctrls['schedules'].teacherGetSchedule);
     app.get('/api/courses/teacherGetCourse', ctrls['courses'].teacherGetCourse);
     app.post('/api/schedules/teacherCreateSchedule', ctrls['schedules'].teacherGetSchedule);
     app.post('/api/courses/teacherCreateCourse', ctrls['courses'].teacherGetCourse);
-
 
 
 
