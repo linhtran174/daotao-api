@@ -6,23 +6,35 @@ module.exports = function(model, utils) {
 
     var teachersCtrl = {};
 
-    teacherCtrls.changePassword = function(req, res, next) {
+    teachersCtrl.changePassword = function(req, res, next) {
         if (req.user && req.user.role == "teacher") {
             model.findById(req.user.id)
                 .then(function(user) {
-                    if (!user) {
-                        res.status(404).json({ status: "failed", message: "There is no user with this id!!" });
-                    }
-                    user.update(req.body).then(function(newUser) {
-                        res.status(200).json(newUser);
-                    }, function(updateErr) {
-                        res.status(1000).json({ status: "failed", message: updateErr.message });
-                        next(updateErr);
-                    })
-                }, function(err) {
-                    res.status(1000).json({ status: "failed", message: err.message })
-                    next(err);
-                });
+                        if (!user) {
+                            res.status(404).json({ status: "failed", message: "There is no user with this id!!" });
+                        } else {
+                            utils.compare(req.body.oldPass, user.get().teacher_pass, (err, success) => {
+                                if (err) res.json({ status: "failed", message: err.message });
+                                if (success) {
+                                    utils.encrypt(req.body.newPass, encrypted => {
+                                        user.update({ teacher_pass: encrypted}).then(newUser => {
+                                            res.status(200).json({ status: "success", message: "password changed!" });
+
+                                        }, error => {
+                                            res.json({ status: "failed", message: error.message });
+                                        })
+                                    })
+                                }
+                                else{
+                                    res.status(401).json({status:"failed",message:"wrong old password!"});
+                                }
+                            });
+                        }
+                    },
+                    function(err) {
+                        res.json({ status: "failed", message: err.message })
+                        next(err);
+                    });
 
         } else {
             res.status(401).json({ status: "401 failed", message: "You do not have the right to access this resource" });
@@ -36,14 +48,15 @@ module.exports = function(model, utils) {
                     if (!user) {
                         res.status(404).json({ status: "failed", message: "There is no user with this id!!" });
                     }
+                    console.log('req body: ', req.body);
                     user.update(req.body).then(function(newUser) {
-                        res.status(200).json(newUser);
+                        res.status(200).json({ status: "success", info: newUser });
                     }, function(updateErr) {
-                        res.status(1000).json({ status: "failed", message: updateErr.message });
+                        res.json({ status: "failed", message: updateErr.message });
                         next(updateErr);
                     })
                 }, function(err) {
-                    res.status(1000).json({ status: "failed", message: err.message })
+                    res.json({ status: "failed", message: err.message })
                     next(err);
                 });
         } else {
@@ -52,15 +65,18 @@ module.exports = function(model, utils) {
     }
 
     teachersCtrl.getMyInfo = function(req, res, next) {
+
         if (req.user && req.user.role == "teacher") {
             model.findById(req.user.id)
                 .then(function(user) {
                     if (!user) {
                         res.status(404).json({ status: "failed", message: "There is no user with this id!!" });
                     } else {
-                        res.status(200).json(user);
+                        res.status(200).json({ status: "sucess", info: user });
                     }
                 })
+        } else {
+            res.status(401).json({ status: "401 failed", message: "You do not have the right to access this resource" });
         }
     }
 
@@ -118,7 +134,7 @@ module.exports = function(model, utils) {
                     if (users) res.json(users);
                     else res.status(404).json({ status: "success", message: "no users was found" })
                 }, function(err) {
-                    res.status(1000).json({ status: "failed, unknown error", message: err.message });
+                    res.json({ status: "failed, unknown error", message: err.message });
                     next(err);
                 });
         } else {
@@ -133,7 +149,7 @@ module.exports = function(model, utils) {
                     if (user) res.json(user);
                     else res.status(404).json({ status: "404 teacher not found" });
                 }, function(err) {
-                    res.status(1000).json({ status: "1000 failed, unknown error", message: err.message });
+                    res.json({ status: "failed, unknown error", message: err.message });
                     next(err);
                 });
         } else {
@@ -175,11 +191,11 @@ module.exports = function(model, utils) {
                     user.update(req.body).then(function(newUser) {
                         res.status(200).json(newUser);
                     }, function(updateErr) {
-                        res.status(1000).json({ status: "failed", message: updateErr.message });
+                        res.json({ status: "failed", message: updateErr.message });
                         next(updateErr);
                     })
                 }, function(err) {
-                    res.status(1000).json({ status: "failed", message: err.message })
+                    res.json({ status: "failed", message: err.message })
                     next(err);
                 });
         } else {
@@ -193,7 +209,7 @@ module.exports = function(model, utils) {
                 .then(function() {
                     res.status(200).json({ status: "success", id: req.params.id, message: 'delete completed' });
                 }, function(err) {
-                    res.status(1000).json({ status: "1000 failed, unknown error", message: err.message });
+                    res.json({ status: "failed, unknown error", message: err.message });
                     next(err);
                 });
         } else {

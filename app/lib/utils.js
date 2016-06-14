@@ -5,6 +5,9 @@ module.exports = function(config) {
     var jwt = require('jsonwebtoken');
     var obj = {};
 
+    obj.revokeToken = function(token){
+        jwt
+    }
 
     obj.checkToken = function(req, res, next) {
         if (req.headers.token) {
@@ -31,6 +34,8 @@ module.exports = function(config) {
             next();
         }
     }
+
+
 
     // obj.checkUserRole() = function(req.user) {
     //     //get Token
