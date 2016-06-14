@@ -22,7 +22,7 @@ module.exports = function(model, utils) {
         req.body.schedule_teacher = req.user.id;
         if(req.user && req.user.role=="teacher"){
             model.create(req.body).then(function(schedule) {
-                res.json(schedule);
+                res.status(200).json({status:"success",info:schedule});
             }, function(err) {
                 console.log(JSON.stringify(err));
                 res.status(1000).json({ status: "failed", message: err.message });
