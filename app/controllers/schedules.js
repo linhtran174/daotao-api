@@ -22,10 +22,11 @@ module.exports = function(model, utils) {
         req.body.schedule_teacher = req.user.id;
         if(req.user && req.user.role=="teacher"){
             model.create(req.body).then(function(schedule) {
-                res.status(200).json({status:"success",info:schedule});
+                //console.log(req.body);
+                res.status(200).json({status:"success",createdSchedule:schedule});
             }, function(err) {
                 console.log(JSON.stringify(err));
-                res.status(1000).json({ status: "failed", message: err.message });
+                res.json({ status: "failed", message: err.message });
             });
         }
         else{
@@ -48,7 +49,7 @@ module.exports = function(model, utils) {
             if (schedules) res.json(schedules);
             else res.status(404).json({ status: "success", message: "no schedule was found" })
         }, function(err) {
-            res.status(1000).json({ status: "failed, unknown error", message: err.message });
+            res.json({ status: "failed, unknown error", message: err.message });
             return next(err);
         });
     }
@@ -58,7 +59,7 @@ module.exports = function(model, utils) {
             if (schedule) res.json(schedule);
             else res.status(404).json({ status: "404 schedule not found" });
         }, function(err) {
-            res.status(1000).json({ status: "1000 failed, unknown error", message: err.message });
+            res.json({ status: " failed, unknown error", message: err.message });
             return next(err);
         });
     };
@@ -75,7 +76,7 @@ module.exports = function(model, utils) {
                 res.json(schedule);
             }, function(err) {
                 console.log(JSON.stringify(err));
-                res.status(1000).json({ status: "failed", message: err.message });
+                res.json({ status: "failed", message: err.message });
             });
         })
         ///////////////////////////////
@@ -90,11 +91,11 @@ module.exports = function(model, utils) {
             schedule.update(req.body).then(function(schedule) {
                 res.status(200).json(schedule);
             }, function(updateErr) {
-                res.status(1000).json({ status: "failed", message: updateErr.message });
+                res.json({ status: "failed", message: updateErr.message });
                 return next(updateErr);
             })
         }, function(err) {
-            res.status(1000).json({ status: "failed", message: err.message })
+            res.json({ status: "failed", message: err.message })
             return next(err);
         });
     }
@@ -103,7 +104,7 @@ module.exports = function(model, utils) {
         model.destroy({ where: { schedule_id: req.params.id } }).then(function() {
             res.status(200).json({ status: "success", id: req.params.id, message: 'delete completed' });
         }, function(err) {
-            res.status(1000).json({ status: "1000 failed, unknown error", message: err.message });
+            res.json({ status: "failed, unknown error", message: err.message });
             return next(err);
         })
     }
