@@ -1,6 +1,6 @@
 module.exports = function(app, utils, models) {
 
-
+    var unless = require('express-unless');
     var ctrls = utils.loadControllers(models);
 
     var names = utils.getModelNames();
@@ -9,12 +9,15 @@ module.exports = function(app, utils, models) {
         res.render('index');
     })
 
-    //check token with these routes
-    app.use('/api/teachers',utils.checkToken);
-    app.use('/api/classroom',utils.checkToken);
-    app.use('/api/schedules',utils.checkToken);
-    app.use('/api/students',utils.checkToken);
-
+    utils.checkToken.unless = unless;
+    //check token with these routes    
+    app.use('/api/teachers', utils.checkToken);
+    app.use('/api/classroom', utils.checkToken);
+    app.use('/api/schedules', utils.checkToken);
+    app.use('/api/students', utils.checkToken);
+    app.use('/api/courses/', utils.checkToken.unless({
+        methods: ['GET']
+    }));
 
     //set get default api
     names.forEach(function(name) {
@@ -30,6 +33,18 @@ module.exports = function(app, utils, models) {
     //login API
     app.post('/api/users/login', ctrls['users'].login); // login
     app.post('/api/teachers/login', ctrls['teachers'].login);
+
+
+    //teacherAPI
+    app.put('/api/teachers/modifyMyInfo', ctrls['teachers'].modifyMyInfo);
+    app.put('/api/teachers/changePassword', ctrls['teachers'].changePassword);
+    app.get('/api/teachers/getMyInfo', ctrls['teachers'].getMyInfo);
+    app.get('/api/schedules/teacherGetSchedule', ctrls['schedules'].teacherGetSchedule);
+    app.get('/api/courses/teacherGetCourse', ctrls['courses'].teacherGetCourse);
+    app.post('/api/schedules/teacherCreateSchedule', ctrls['schedules'].teacherCreateSchedule);
+    app.post('/api/courses/teacherCreateCourse', ctrls['courses'].teacherGetCourse);
+
+
 
     // catch-all
     app.get('*', function(req, res) { res.status(404).json({ error: 'Invalid GET request' }) })

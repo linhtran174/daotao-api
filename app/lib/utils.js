@@ -5,10 +5,13 @@ module.exports = function(config) {
     var jwt = require('jsonwebtoken');
     var obj = {};
 
+    obj.revokeToken = function(token){
+        jwt
+    }
 
     obj.checkToken = function(req, res, next) {
-        if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
-            jwt.verify(req.headers.authorization.split(' ')[1], 'EdoSuperSecretKey', function(err, user) {
+        if (req.headers.token) {
+            jwt.verify(req.headers.token, 'EdoSuperSecretKey', function(err, user) {
                 if (user) {
                     console.log('There is an user');
                     req.user = user;
@@ -31,6 +34,8 @@ module.exports = function(config) {
             next();
         }
     }
+
+
 
     // obj.checkUserRole() = function(req.user) {
     //     //get Token

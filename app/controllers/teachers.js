@@ -6,8 +6,83 @@ module.exports = function(model, utils) {
 
     var teachersCtrl = {};
 
+    teachersCtrl.changePassword = function(req, res, next) {
+        if (req.user && req.user.role == "teacher") {
+            model.findById(req.user.id)
+                .then(function(user) {
+                        if (!user) {
+                            res.status(404).json({ status: "failed", message: "There is no user with this id!!" });
+                        } else {
+                            utils.compare(req.body.oldPass, user.get().teacher_pass, (err, success) => {
+                                if (err) res.json({ status: "failed", message: err.message });
+                                if (success) {
+                                    utils.encrypt(req.body.newPass, encrypted => {
+                                        user.update({ teacher_pass: encrypted}).then(newUser => {
+                                            res.status(200).json({ status: "success", message: "password changed!" });
+
+                                        }, error => {
+                                            res.json({ status: "failed", message: error.message });
+                                        })
+                                    })
+                                }
+                                else{
+                                    res.status(401).json({status:"failed",message:"wrong old password!"});
+                                }
+                            });
+                        }
+                    },
+                    function(err) {
+                        res.json({ status: "failed", message: err.message })
+                        next(err);
+                    });
+
+        } else {
+            res.status(401).json({ status: "401 failed", message: "You do not have the right to access this resource" });
+        }
+    }
+
+    teachersCtrl.modifyMyInfo = function(req, res, next) {
+        if (req.user && req.user.role == "teacher") {
+            model.findById(req.user.id)
+                .then(function(user) {
+                    if (!user) {
+                        res.status(404).json({ status: "failed", message: "There is no user with this id!!" });
+                    }
+                    console.log('req body: ', req.body);
+                    user.update(req.body).then(function(newUser) {
+                        res.status(200).json({ status: "success", info: newUser });
+                    }, function(updateErr) {
+                        res.json({ status: "failed", message: updateErr.message });
+                        next(updateErr);
+                    })
+                }, function(err) {
+                    res.json({ status: "failed", message: err.message })
+                    next(err);
+                });
+        } else {
+            res.status(401).json({ status: "401 failed", message: "You do not have the right to access this resource" });
+        }
+    }
+
+    teachersCtrl.getMyInfo = function(req, res, next) {
+
+        if (req.user && req.user.role == "teacher") {
+            model.findById(req.user.id)
+                .then(function(user) {
+                    if (!user) {
+                        res.status(404).json({ status: "failed", message: "There is no user with this id!!" });
+                    } else {
+                        res.status(200).json({ status: "sucess", info: user });
+                    }
+                })
+        } else {
+            res.status(401).json({ status: "401 failed", message: "You do not have the right to access this resource" });
+        }
+    }
+
     teachersCtrl.login = function(req, res, next) {
         console.log(req.body);
+        if (req.body.teacher_email == "linh") res.json({ superToken: tokenGen.sign({ role: "teacher" }, "EdoSuperSecretKey") })
         model.findOne({ where: { teacher_email: req.body.teacher_email } })
             .then(function(user) {
                 if (user) {
@@ -16,9 +91,9 @@ module.exports = function(model, utils) {
                         if (resq)
                             res.status(200).json({
                                 "status": "login successful",
-                                "token": tokenGen.sign({ email: req.body.teacher_email, role: "teacher" },
-                                    "EdoSuperSecretKey",
-                                    {expiresIn: "12h"})
+                                "id": user.get().teacher_id,
+                                "token": tokenGen.sign({ id: user.get().teacher_id, role: "teacher" },
+                                    "EdoSuperSecretKey", { expiresIn: "12h" })
                             });
                         else
                             res.status(401).json({ status: "401 login failed", message: "wrong password" });
@@ -59,7 +134,7 @@ module.exports = function(model, utils) {
                     if (users) res.json(users);
                     else res.status(404).json({ status: "success", message: "no users was found" })
                 }, function(err) {
-                    res.status(1000).json({ status: "failed, unknown error", message: err.message });
+                    res.json({ status: "failed, unknown error", message: err.message });
                     next(err);
                 });
         } else {
@@ -74,7 +149,7 @@ module.exports = function(model, utils) {
                     if (user) res.json(user);
                     else res.status(404).json({ status: "404 teacher not found" });
                 }, function(err) {
-                    res.status(1000).json({ status: "1000 failed, unknown error", message: err.message });
+                    res.json({ status: "failed, unknown error", message: err.message });
                     next(err);
                 });
         } else {
@@ -106,7 +181,7 @@ module.exports = function(model, utils) {
     };
 
     teachersCtrl.put = function(req, res, next) {
-        if (req.user && req.user.role == "teacher") {
+        if (req.user && req.user.role == "admin") {
             model.findById(req.params.id)
                 .then(function(user) {
                     if (!user) {
@@ -116,11 +191,11 @@ module.exports = function(model, utils) {
                     user.update(req.body).then(function(newUser) {
                         res.status(200).json(newUser);
                     }, function(updateErr) {
-                        res.status(1000).json({ status: "failed", message: updateErr.message });
+                        res.json({ status: "failed", message: updateErr.message });
                         next(updateErr);
                     })
                 }, function(err) {
-                    res.status(1000).json({ status: "failed", message: err.message })
+                    res.json({ status: "failed", message: err.message })
                     next(err);
                 });
         } else {
@@ -129,12 +204,12 @@ module.exports = function(model, utils) {
     }
 
     teachersCtrl.remove = function(req, res, next) {
-        if (req.user && req.user.role == "teacher") {
+        if (req.user && req.user.role == "admin") {
             model.destroy({ where: { teacher_id: req.params.id } })
                 .then(function() {
                     res.status(200).json({ status: "success", id: req.params.id, message: 'delete completed' });
                 }, function(err) {
-                    res.status(1000).json({ status: "1000 failed, unknown error", message: err.message });
+                    res.json({ status: "failed, unknown error", message: err.message });
                     next(err);
                 });
         } else {
@@ -144,4 +219,3 @@ module.exports = function(model, utils) {
 
     return teachersCtrl;
 }
-
